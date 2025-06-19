@@ -1,128 +1,106 @@
-tiny - Conversor de Imagens para Linha de Comando
+# Conversor de Imagens em Python
 
-tiny é um script Python simples e poderoso para converter imagens entre diferentes formatos, ajustar a qualidade de compressão e redimensioná-las, tudo diretamente da linha de comando. Ideal para otimizar imagens para a web ou para uso geral.
+Este projeto é um **conversor de imagens via linha de comando**, escrito em Python, que permite converter imagens para diferentes formatos (padrão WebP), ajustar a qualidade da compressão e realizar redimensionamento opcional mantendo a proporção da imagem.
 
-Funcionalidades
+## Funcionalidades
 
-*   Conversão de Formato: Converta imagens para WebP (padrão), PNG, JPEG, BMP, TIFF, GIF.
-*   Ajuste de Qualidade: Controle a qualidade de compressão para formatos com perdas (WebP, JPEG) e o nível de compressão para PNG.
-*   Redimensionamento: Redimensione imagens para uma dimensão máxima especificada, mantendo a proporção original.
-*   Processamento em Lote: Converta todas as imagens em uma pasta ou uma imagem específica.
-*   Saída Organizada: Salva as imagens convertidas em uma pasta dedicada (converted_images) por padrão, ou em um diretório de sua escolha.
+* Conversão de imagens para múltiplos formatos (`webp`, `png`, `jpeg`, etc.).
+* Controle de qualidade de compressão.
+* Redimensionamento opcional com limite de dimensão máxima.
+* Suporte à conversão de uma única imagem ou todas as imagens dentro de uma pasta.
+* Tratamento automático de canais de cor conforme o formato de saída.
 
-Instalação
+## Requisitos
 
-Para usar o tiny, siga os passos abaixo:
+* Python 3.x
+* Biblioteca Pillow (PIL)
 
-1. Pré-requisitos
+### Instalação das dependências
 
-Certifique-se de ter o Python 3 e o pip instalados.
+```bash
+pip install pillow
+```
 
-Instale a biblioteca Pillow, que é a base para a manipulação de imagens:
+## Como Usar
 
-pip install Pillow
-# ou, se tiver várias versões do Python:
-pip3 install Pillow
+### Sintaxe básica
 
-2. Baixe o Script
+```bash
+python3 convert.py <input_path> [opções]
+```
 
-Crie um arquivo chamado tiny (sem extensão) em um local de sua preferência, por exemplo, ~/.local/bin/.
+### Argumento obrigatório
 
-mkdir -p ~/.local/bin/
-nano ~/.local/bin/tiny # ou use seu editor de texto favorito
+| Argumento    | Descrição                                                         |
+| ------------ | ----------------------------------------------------------------- |
+| `input_path` | Caminho para uma imagem específica ou uma pasta contendo imagens. |
 
-Cole o conteúdo completo do script Python mais recente (o que inclui as opções -s para formato e -n para nome de imagem única) dentro deste arquivo. Certifique-se de que a primeira linha do arquivo seja:
+### Opções disponíveis
 
-#!/usr/bin/env python3
+| Opção             | Descrição                                                                                                                        | Exemplo               |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `-o`, `--output`  | Caminho da pasta de saída. Se omitido, será criada uma pasta `converted_images` dentro da pasta de entrada.                      | `-o ./saidas`         |
+| `-q`, `--quality` | Qualidade da compressão (1 a 100). Padrão: 70.                                                                                   | `-q 85`               |
+| `-s`, `--format`  | Formato de saída: `webp`, `png`, `jpeg`, `jpg`, `bmp`, `tiff`, `gif`. Padrão: `webp`.                                            | `-s png`              |
+| `-n`, `--name`    | Nome de uma única imagem a ser convertida (usado apenas quando `input_path` for uma pasta).                                      | `-n minha_imagem.jpg` |
+| `-z`, `--size`    | Redimensiona a imagem para que a maior dimensão (largura ou altura) não exceda o valor definido (em pixels). Mantém a proporção. | `-z 800`              |
 
-3. Torne o Script Executável
+## Exemplos de Uso
 
-Dê permissão de execução ao arquivo tiny:
+### Converter uma única imagem para WebP (padrão)
 
-chmod +x ~/.local/bin/tiny
+```bash
+python3 convert.py ./imagens/foto.jpg
+```
 
-4. Adicione ao PATH (se necessário)
+### Converter uma imagem para PNG com qualidade 90
 
-O diretório ~/.local/bin/ geralmente já está no PATH do seu sistema no Zorin OS (e na maioria das distribuições Linux modernas). Para verificar, abra um novo terminal e digite echo $PATH. Se ~/.local/bin não estiver listado, você precisará adicioná-lo.
+```bash
+python3 convert.py ./imagens/foto.jpg -s png -q 90
+```
 
-Edite seu arquivo de configuração do shell (geralmente ~/.bashrc ou ~/.profile):
+### Converter todas as imagens de uma pasta para JPEG com tamanho máximo de 1200px
 
-nano ~/.bashrc # ou ~/.profile
+```bash
+python3 convert.py ./imagens/ -s jpeg -q 80 -z 1200
+```
 
-Adicione a seguinte linha no final do arquivo:
+### Converter apenas uma imagem específica dentro de uma pasta
 
-export PATH="$HOME/.local/bin:$PATH"
+```bash
+python3 convert.py ./imagens/ -n minha_imagem.png
+```
 
-Salve e feche o arquivo. Em seguida, recarregue a configuração do shell:
+### Salvar os arquivos convertidos em uma pasta específica
 
-source ~/.bashrc # ou source ~/.profile
+```bash
+python3 convert.py ./imagens/foto.jpg -o ./output_images
+```
 
-Agora você pode usar o comando tiny de qualquer lugar no terminal.
+## Formatos de Saída Suportados
 
-Uso
+* `WEBP`
+* `PNG`
+* `JPEG` / `JPG`
+* `BMP`
+* `TIFF` / `TIF`
+* `GIF`
 
-A sintaxe básica do comando tiny é:
+## Comportamentos Importantes
 
-tiny <input_path> [opções]
+* Quando o **input** for um diretório, o script procura e converte **todas as imagens suportadas** dentro dele (a não ser que o argumento `--name` seja usado).
+* Para formatos como **JPEG**, a imagem será convertida automaticamente para RGB caso contenha canal alfa.
+* O parâmetro de qualidade é interpretado de forma específica para cada formato (exemplo: para PNG, é convertido para o nível de compressão).
 
-Argumentos
+## Estrutura do Projeto
 
-*   <input_path>: Obrigatório. O caminho para a imagem individual ou para a pasta que contém as imagens a serem convertidas.
+```
+.
+├── convert.py        # Código principal
+├── README.md         # Documentação (este arquivo)
+└── requirements.txt  # (Opcional) Dependências do projeto
+```
 
-Opções
+## Licença
 
-*   -o, --output <diretorio>:
-    *   Define o diretório de saída para as imagens convertidas.
-    *   Padrão: Se não especificado, as imagens serão salvas em uma subpasta chamada converted_images dentro do diretório de origem (ou do diretório da imagem, se for um arquivo único).
-*   -q, --quality <1-100>:
-    *   Define a qualidade de compressão para formatos com perdas (WebP, JPEG).
-    *   Para PNG, isso se traduz em um nível de compressão (100% = menor compressão, maior qualidade; 1% = maior compressão, menor qualidade).
-    *   Padrão: 70.
-*   -s, --format <formato>:
-    *   Define o formato de saída da imagem.
-    *   Formatos suportados: webp (padrão), png, jpeg (ou jpg), bmp, tiff (ou tif), gif.
-    *   Padrão: webp.
-*   -n, --name <nome_da_imagem>:
-    *   Usado quando <input_path> é uma pasta, mas você deseja converter apenas uma imagem específica dentro dela.
-    *   Especifique o nome completo do arquivo da imagem (ex: minha_foto.jpg).
-*   -z, --size <pixels>:
-    *   Redimensiona a imagem para que sua maior dimensão (largura ou altura) não exceda o número de pixels especificado.
-    *   A proporção da imagem é mantida.
-
-Exemplos de Uso
-
-1.  Converter uma única imagem para WebP com qualidade padrão (70%):
-    tiny minha_imagem.png
-    # Saída: ./converted_images/minha_imagem.webp
-
-2.  Converter uma única imagem para WebP com qualidade 85%:
-    tiny /caminho/para/minha_imagem.jpg -q 85
-    # Saída: /caminho/para/converted_images/minha_imagem.webp
-
-3.  Converter todas as imagens de uma pasta para WebP com qualidade 60%:
-    tiny /caminho/para/minha_pasta_de_fotos -q 60
-    # Saída: /caminho/para/minha_pasta_de_fotos/converted_images/*.webp
-
-4.  Converter uma imagem específica (foto_do_gato.jpg) dentro de uma pasta para WebP com qualidade 75%:
-    tiny /caminho/para/minha_pasta_de_fotos -n foto_do_gato.jpg -q 75
-    # Saída: /caminho/para/minha_pasta_de_fotos/converted_images/foto_do_gato.webp
-
-5.  Converter todas as imagens de uma pasta para PNG:
-    tiny /caminho/para/minha_pasta_de_fotos -s png
-    # Saída: /caminho/para/minha_pasta_de_fotos/converted_images/*.png
-
-6.  Converter todas as imagens de uma pasta para JPEG, redimensionar para no máximo 1024px e salvar em um diretório específico:
-    tiny /caminho/para/minha_pasta_de_fotos -s jpeg -z 1024 -o /caminho/para/saida/imagens_otimizadas
-    # Saída: /caminho/para/saida/imagens_otimizadas/*.jpeg (redimensionadas)
-
-7.  Converter uma imagem para WebP, redimensionar para no máximo 800px e salvar na pasta atual:
-    tiny minha_imagem_grande.jpg -z 800 -o .
-    # Saída: ./converted_images/minha_imagem_grande.webp (redimensionada)
-
-Contribuição
-
-Sinta-se à vontade para sugerir melhorias ou reportar problemas.
-
-Licença
-
-Este projeto é de código aberto e está disponível sob a licença MIT.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
