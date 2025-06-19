@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+import argparse
+import os
+from PIL import Image
+
+def convert_image(input_path, output_dir, output_format, quality, max_dimension=None):
+    """Converte uma única imagem para o formato e qualidade especificados, com redimensionamento opcional."""
+    try:
+        img = Image.open(input_path)
+
+        # Redimensionamento
+        if max_dimension and (img.width > max_dimension or img.height > max_dimension):
+            # Usamos thumbnail para redimensionar mantendo a proporção e com boa qualidade
+            img.thumbnail((max_dimension, max_dimension), Image.LANCZOS)
+            print(f"Redimensionando '{input_path}' para no máximo {max_dimension}px em sua maior dimensão.")
+
+        # Garante que a imagem esteja no modo RGB se for salvar em JPEG/WebP
+        # para evitar problemas com o canal alfa, a menos que o formato de saída suporte.
+        # WebP suporta alfa, mas para JPEG é essencial.
+        if output_format.lower() in ['jpeg', 'jpg'] and img.mode in ('RGBA', 'P'):
+            img = img.convert('RGB')
+        elif output_format.lower() == 'webp' and img.mode == 'P': # Converter paleta para RGBA para WebP
+            img = img.convert('RGBA')
+
+        base_name = os.path.splitext(os.path.basename(input_path))[0]
+        output_filename = f"{base_name}.{output_format.lower()}"
+        output_path = os.path.join(output_dir, output_filename)
+
+        save_params = {'quality': quality}
+        if output_format.lower() == 'webp':
+            # Para WebP, 'quality' controla a compressão lossy.
+            pass
+        elif output_format.lower() in ['jpeg', 'jpg']:
+            # JPEG não suporta canal alfa, então a conversão para RGB é importante.
+            pass
+        elif output_format.lower() == 'png':
+            # PNG usa 'compress_level' (0-9) em vez de 'quality'.
+            # Mapeamos a qualidade de 1-100 para compress_level de 9-0.
+            save_params['compress_level'] = round(9 - (quality / 100 * 9))
+            # Remover 'quality' se não for aplicável para PNG
+            if 'quality' in save_params:
+                del save_params['quality']
+
+        img.save(output_path, format=output_format, **save_params)
+        print(f"Imagem '{input_path}' convertida para '{output_path}' com qualidade {quality}%.")
+        return True
+    except FileNotFoundError:
+        print(f"Erro: Arquivo não encontrado em '{input_path}'.")
+        return False
+    except Exception as e:
+        print(f"Erro ao converter a imagem '{input_path}': {e}")
+        return False
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Converte imagens para diferentes formatos (padrão WebP) com compressão e redimensionamento ajustáveis.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+
+    parser.add_argument(
+        'input_path',
+        type=str,
+        help="Caminho para a imagem ou pasta de imagens a ser convertida."
+    )
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        default=None,
+        help="Caminho para a pasta de saída. Padrão: 'converted_images' dentro da pasta de entrada/arquivo."
+    )
+    parser.add_argument(
+        '-q', '--quality',
+        type=int,
+        default=70,
+        choices=range(1, 101),
+        metavar="{1-100}",
+        help="Qualidade de compressão (1-100). Padrão: 70."
+    )
+    parser.add_argument(
+        '-s', '--format', # Alterado de -f para -s
+        type=str,
+        default='webp',
+        help="Formato de saída da imagem (ex: webp, png, jpeg). Padrão: webp."
+    )
+    parser.add_argument(
+        '-n', '--name', # Alterado de -s para -n
+        type=str,
+        default=None,
+        help="Nome de uma única imagem a ser convertida, se 'input_path' for uma pasta."
+    )
+    parser.add_argument(
+        '-z', '--size',
+        type=int,
+        default=None,
+        metavar="PIXELS",
+        help="Redimensiona a imagem para que sua maior dimensão (largura ou altura) não exceda PIXELS. Mantém a proporção."
+    )
+
+    args = parser.parse_args()
+
+    input_path = args.input_path
+    quality = args.quality
+    output_format = args.format.upper() # Agora args.format
+    max_dimension = args.size
+    single_image_name = args.name # Agora args.name
+
+    # Valida o formato de saída
+    supported_formats = ['WEBP', 'PNG', 'JPEG', 'JPG', 'BMP', 'TIFF', 'TIF', 'GIF']
+    if output_format not in supported_formats:
+        print(f"Erro: Formato de saída '{args.format}' não suportado. Formatos suportados: {', '.join(supported_formats)}.")
+        return
+
+    # Determina o diretório de saída efetivo
+    effective_output_dir = args.output
+    if effective_output_dir is None:
+        if os.path.isfile(input_path):
+            base_dir = os.path.dirname(input_path) or '.' # Se for arquivo na pasta atual, base_dir é '.'
+        else: # os.path.isdir(input_path)
+            base_dir = input_path
+        effective_output_dir = os.path.join(base_dir, 'converted_images')
+
+    os.makedirs(effective_output_dir, exist_ok=True) # Garante que a pasta de saída exista
+
+    if os.path.isfile(input_path):
+        if single_image_name: # Agora single_image_name
+            print("Aviso: --name é ignorado quando input_path é um arquivo.")
+        convert_image(input_path, effective_output_dir, output_format, quality, max_dimension)
+    elif os.path.isdir(input_path):
+        if single_image_name: # Agora single_image_name
+            single_image_path = os.path.join(input_path, single_image_name) # Agora single_image_name
+            if os.path.isfile(single_image_path):
+                convert_image(single_image_path, effective_output_dir, output_format, quality, max_dimension)
+            else:
+                print(f"Erro: A imagem '{single_image_name}' não foi encontrada na pasta '{input_path}'.") # Agora single_image_name
+        else:
+            print(f"Convertendo todas as imagens em '{input_path}' para '{output_format}' na pasta '{effective_output_dir}'...")
+            converted_count = 0
+            for item in os.listdir(input_path):
+                item_path = os.path.join(input_path, item)
+                # Lista de extensões de imagem comuns que o Pillow pode ler
+                if os.path.isfile(item_path) and item.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tiff', '.tif', '.webp')):
+                    if convert_image(item_path, effective_output_dir, output_format, quality, max_dimension):
+                        converted_count += 1
+            if converted_count == 0:
+                print("Nenhuma imagem suportada encontrada para conversão na pasta.")
+            else:
+                print(f"Concluído. {converted_count} imagem(ns) convertida(s).")
+    else:
+        print(f"Erro: Caminho '{input_path}' não é um arquivo ou diretório válido.")
+
+if __name__ == "__main__":
+    main()
