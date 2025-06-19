@@ -1,6 +1,3 @@
-Com certeza! Aqui está o conteúdo do `README.md` em formato de texto simples, que você pode copiar e colar em um arquivo `.txt` e disponibilizar para download.
-
-```
 tiny - Conversor de Imagens para Linha de Comando
 
 tiny é um script Python simples e poderoso para converter imagens entre diferentes formatos, ajustar a qualidade de compressão e redimensioná-las, tudo diretamente da linha de comando. Ideal para otimizar imagens para a web ou para uso geral.
@@ -129,4 +126,3 @@ Sinta-se à vontade para sugerir melhorias ou reportar problemas.
 Licença
 
 Este projeto é de código aberto e está disponível sob a licença MIT.
-```
