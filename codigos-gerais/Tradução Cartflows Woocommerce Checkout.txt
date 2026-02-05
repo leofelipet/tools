@@ -1,0 +1,33 @@
+add_filter( 'gettext', 'replace_text_strings', 20, 3 );
+function replace_text_strings( $translated_text, $text, $domain ) {
+    switch ( $translated_text ) {
+		case ' Welcome Back %1$s ( %2$s )':
+			$translated_text = ' Olá %1$s! ( %2$s ).';
+			break;
+		case '%s Have a Coupon?':
+			$translated_text = '%s Adicionar Cupom?';
+			break;
+		case 'Already have an account? %1$1s Log in%2$2s':
+			$translated_text = 'Já possui uma conta? %1$1s Login%2$2s';
+			break;
+		case 'Email Address %s':
+			$translated_text = 'Endereço de Email %s';
+			break;
+		case 'Email Address':
+			$translated_text = 'Endereço de Email';
+			break;
+		case 'Entered email address is not a valid email.':
+			$translated_text = 'O e-mail digitado não é um e-mail válido.';
+			break;
+		case 'This email is already registered. Please enter the password to continue.':
+			$translated_text = 'Já existe uma conta com esse e-mail. Digite a senha abaixo para acessa-lo.';
+			break;
+		case 'Password %s':
+			$translated_text = 'Digite sua Senha';
+			break;
+    case '%s Have a coupon?':
+      $translated_text = '%s Possui um cupom?';
+      break;
+    }
+    return $translated_text;
+}

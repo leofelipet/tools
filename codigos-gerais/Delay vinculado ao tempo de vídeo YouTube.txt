@@ -1,0 +1,44 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    window.addEventListener('message', function (event) {
+        let data;
+
+        if (typeof event.data === 'string') {
+            try {
+                data = JSON.parse(event.data);
+            } catch (error) {
+                return;
+            }
+        } else {
+            data = event.data;
+        }
+
+        let currentTime = data.info?.currentTime;
+
+        if (currentTime > 3) {
+            let escondidos = document.querySelectorAll(".esconder");
+            for (let i = 0; i < escondidos.length; i++) {
+                escondidos[i].classList.add("ativo");
+                setTimeout(function(){
+                    escondidos[i].style.opacity = "1";
+                }, 200);
+            }
+        }
+    });
+});
+</script>
+
+
+.esconder{
+    display: none;
+    opacity: 0;
+    transition: 1s;
+}
+
+.esconder.ativo{
+    display: flex;
+}
+
+::-webkit-scrollbar{
+		display: none
+}

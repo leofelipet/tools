@@ -1,0 +1,41 @@
+
+// ADICIONA SWITCHER NO ADMIN
+function add_status_column($columns) {
+    $columns['destaque'] = 'Destaque';
+    return $columns;
+}
+
+function add_status_column_content($column_name, $post_id) {
+    if ($column_name == 'destaque') {
+        $status = get_post_meta($post_id, 'destaque', true);
+		if ($status == 'true'){
+			
+			echo '<a href="' . admin_url('admin-ajax.php?action=change_status&post_id=' . $post_id) . '" style="margin-right:4px; display:inline-block; padding:3px; min-width:80px; text-align:center; font-weight:700; border:1px solid #006100; background:#c6efce; color: #006100; border-radius:3px;">↻ SIM</a>';
+		}
+		else
+		{
+			 
+			echo '<a href="' . admin_url('admin-ajax.php?action=change_status&post_id=' . $post_id) . '" style="margin-right:4px; display:inline-block; padding:3px; min-width:80px; text-align:center; font-weight:700; border:1px solid #9c0006; background:#ffc7ce; color:#9c0006; border-radius:3px;">↻ NÃO</a>';
+        }
+    }
+}
+
+function change_status() {
+    $post_id = $_GET['post_id'];
+	$post_type = get_post_type( $post_id );
+    $status = get_post_meta($post_id, 'destaque', true);
+    if ($status == 'true') {
+        update_post_meta($post_id, 'destaque', 'false');
+    } else {
+        update_post_meta($post_id, 'destaque', 'true');
+    }
+	$link="edit.php?post_type=".$post_type;
+	wp_redirect(admin_url($link));
+	exit;
+}
+add_action('wp_ajax_change_status', 'change_status');
+
+/* DUPLIQUE ESSES DADOS PARA NOVOS CPTS*/
+$cpt_name='eventos';
+add_filter('manage_'.$cpt_name.'_posts_columns', 'add_status_column');
+add_action('manage_'.$cpt_name.'_posts_custom_column', 'add_status_column_content', 10, 2);

@@ -1,0 +1,8 @@
+let prevArrow = document.querySelectorAll('.prev-arrow');
+let nextArrow = document.querySelectorAll('.next-arrow');
+
+let prevSlide = document.querySelector('#lf-prev-button');
+let nextSlide = document.querySelector('#lf-next-button');
+
+prevSlide.addEventListener('click', () => {prevArrow.click();})
+nextSlide.addEventListener('click', () => {nextArrow.click();})

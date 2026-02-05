@@ -1,0 +1,19 @@
+.hide-system-action.ativo {
+  opacity: 1 !important
+}
+
+.hide-system-action:not(.ativo) {
+  transition: .5s
+}
+
+.hide-system-action:not(.ativo):hover {
+  opacity: 1 !important
+}
+
+body:has(.elementor-editor-active) .hide-system-reaction {
+  display: inherit !important
+}
+
+body:not(.elementor-editor-active) .hide-system-reaction {
+  display: none
+}

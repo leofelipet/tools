@@ -1,0 +1,26 @@
+/**
+ *
+ * Essa Função desativa todos os resultados de pesquisa do wordpress 
+ *
+ * @param object $query The main WordPress query.
+ */
+
+add_action( 'pre_get_posts', 'tg_exclude_pages_from_search_results' );
+function tg_exclude_pages_from_search_results( $query ) {
+    if ( $query->is_main_query() && $query->is_search() && ! is_admin() ) {
+        $query->set( 'post_type', array( 'post' ) );
+    }    
+}
+
+/**
+ *
+ * Essa função adiciona os CPT's desejados no resultado de pesquisa do Wordpress
+ *
+ * @param object $query The main WordPress query.
+ */
+add_action( 'pre_get_posts', 'tg_include_custom_post_types_in_search_results' );
+function tg_include_custom_post_types_in_search_results( $query ) {
+    if ( $query->is_main_query() && $query->is_search() && ! is_admin() ) {
+        $query->set( 'post_type', array( 'NOME DOS CPTS AQUI, ENTRE ASPAS SIMPLES' ) );
+    }
+}

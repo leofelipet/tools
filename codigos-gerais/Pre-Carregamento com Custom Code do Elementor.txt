@@ -1,0 +1,39 @@
+Pré-Carregamento de imagens geral:
+<link rel="preload" href="#" as="image">
+
+
+Para Tablets e Celulares:
+<link rel="preload" href="#" as="image" media="(max-width: 1023px)">
+
+
+Apenas para Celulares:
+<link rel="preload" href="#" as="image" media="(max-width: 767px)">
+
+Apenas para Desktop:
+<link rel="preload" href="#" as="image" media="(min-width: 1024px)">
+
+
+Apenas para SVGs:
+<link rel="preload"  href="#" as="image" type="image/svg+xml" />
+
+Pré-Carregamento de Fontes:
+<link rel="preload" href="#" as="font" type="font/woff2" crossorigin>
+
+Apenas para Tablets:
+<link rel="preload" href="#" as="image" media="(min-width: 767px) and (max-width: 1023px)">
+
+Pré-Carregamento de scripts:
+<link rel="preload" href="#" as="script" type="text/javascript" crossorigin>
+
+
+Pré-Carregamento de CSS:
+<link rel="preload" href="#" as="style" type="text/css" crossorigin>
+
+
+Favicon:
+Converter ícone em BASE64
+https://base64.guru/converter/encode/image/svg 
+
+
+Código de inclusão:
+<link rel="shortcut icon" href="data:image/x-icon;base64,[SUBSTITUI]" />

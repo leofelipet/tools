@@ -1,0 +1,148 @@
+<script>
+    // Seleciona os elementos do formulário
+    const cep = document.querySelector('#form-field-field_6d45852');
+    const cidade = document.querySelector('#form-field-field_30f916b');
+    const estado = document.querySelector('#form-field-field_f2c6f76');
+    const bairro = document.querySelector('#form-field-field_ac4bd18');
+    const endereco = document.querySelector('#form-field-field_3fef0d3');
+	    const cpf = document.querySelector('#form-field-field_172631c');
+    const tel  = document.querySelector('#form-field-field_5149a48');
+    const dtnasc  = document.querySelector('#form-field-field_2b390b4');
+
+    // Adiciona um evento de input no campo CEP
+    cep.addEventListener('input', () => {
+      // Remove caracteres não numéricos do valor do CEP
+      const cepValue = cep.value.replace(/\D/g, '');
+
+      // Verifica se o CEP tem exatamente 8 caracteres
+      if (cepValue.length !== 8) {
+        return;
+      }
+
+      // Faz uma requisição GET para a API dos Correios com o CEP
+      fetch(`https://viacep.com.br/ws/${cepValue}/json/`)
+        .then(response => response.json())
+        .then(data => {
+          // Preenche os campos com os dados retornados pela API
+          cidade.value = data.localidade;
+          estado.value = data.uf;
+          bairro.value = data.bairro;
+          endereco.value = data.logradouro;
+        })
+        .catch(error => {
+          console.error(error);
+          alert('CEP inválido!');
+        });
+    });
+	
+	    // CRIANDO MASCARAS INPUT //
+    // CPF
+    function aplicarMascaraCPF(cpf) {
+      cpf.value = cpf.value.replace(/\D/g, '')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{2})/, '$1-$2');
+    }
+
+    // CEP
+    function aplicarMascaraCEP(cep) {
+      cep.value = cep.value.replace(/\D/g, '')
+        .replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    // Telefone
+    function aplicarMascaraTelefone(telefone) {
+      telefone.value = telefone.value.replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d)/, '$1-$2')
+    }
+
+    // Data de Nascimento
+    function aplicarMascaraDataNascimento(data) {
+      data.value = data.value.replace(/\D/g, '')
+        .replace(/(\d{2})(\d)/, '$1/$2')
+        .replace(/(\d{2})(\d)/, '$1/$2');
+    }
+
+    // Adicionando os eventos aos inputs
+    window.onload = function () {
+      cpf.addEventListener('input', function () {
+        aplicarMascaraCPF(this);
+      });
+      cpf.setAttribute('maxlength', 14);
+
+      cep.addEventListener('input', function () {
+        aplicarMascaraCEP(this);
+      });
+      cep.setAttribute('maxlength', 9);
+
+      tel.addEventListener('input', function () {
+        aplicarMascaraTelefone(this);
+      });
+      tel.setAttribute('maxlength', 15);
+
+      dtnasc.addEventListener('input', function () {
+        aplicarMascaraDataNascimento(this);
+      });
+      dtnasc.setAttribute('maxlength', 10);
+    }
+  </script>
+
+
+
+
+
+--------------------------------------------
+
+  <script> 
+    let rg     = document.querySelector('#form-field-field_b2d5513');
+    let nome   = document.querySelector('#form-field-field_0a889ce');
+    let num    = document.querySelector('#form-field-field_4a50697');
+    let button = document.querySelector('#submit-incar-class');
+    let form   = document.getElementById('form_incar_class');
+    var sexo   = '';
+
+    function getSexo() {
+      if (document.getElementById('form-field-field_18bae63-0').checked === true) {
+        sexo = 'm';
+      } else if (document.getElementById('form-field-field_18bae63-1').checked === true) {
+        sexo = 'f';
+      }
+    }
+
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      getSexo();
+
+      let cpf1      = cpf.value.replace(/\./g, '').replace(/\-/g, '');
+      let rg1       = rg.value.replace(/\./g, '').replace(/\-/g, '');
+      let nome1     = nome.value.toLowerCase().replace(/ /g, '%20');
+      let cidade1   = cidade.value.toLowerCase().replace(/ /g, '%20');
+      let estado1   = estado.value;
+      let bairro1   = bairro.value.toLowerCase().replace(/ /g, '%20');
+      let endereco1 = endereco.value.toLowerCase().replace(/ /g, '%20');
+      let num1      = num.value.replace(/\./g, '%20');
+      let dtnasc1   = dtnasc.value.replace(/\//g, '');
+      let sexo1     = sexo.toUpperCase();
+      let cep1      = cep.value.split('-')[0];
+      let complCep  = cep.value.split('-')[1];
+      let ddd       = (tel.value.replace(/\(/g, '').replace(/\)/g, '').replace(/-/g, '')).split(' ')[0]
+      let fone      = (tel.value.replace(/\(/g, '').replace(/\)/g, '').replace(/-/g, '')).split(' ')[1]
+
+
+      const url = `https://www.qualicard.net.br/cgi-bin/APICadastroOnlineSimplificado.php?Cpf=${cpf1}&Rg=${rg1}&Nome=${nome1}&Sexo=${sexo1}&Endereco=${endereco1}%20${num1}&Bairro=${bairro1}&Cidade=${cidade1}&Estado=${estado1}&Cep=${cep1}&ComplCep=${complCep}&Ddd=${ddd}&Fone=${fone}&Dtnasc=${dtnasc1}&UniNgc=860`;
+
+      console.log(url);
+			
+			fetch(url, { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+          alert("Mensagem: " + data.mensagem);
+        })
+        .catch(err => {
+          alert("Erro: " + err);
+        });
+
+    })
+  </script>

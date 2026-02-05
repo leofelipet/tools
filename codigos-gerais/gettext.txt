@@ -1,0 +1,6 @@
+add_filter( 'gettext', function( $translated_text ) {
+    if ( 'Search Results for: %s' === $translated_text ) {
+        $translated_text = 'Você pesquisou por: %s';
+    }
+    return $translated_text;
+} );

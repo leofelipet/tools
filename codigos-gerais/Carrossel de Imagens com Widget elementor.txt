@@ -1,0 +1,5 @@
+selector .swiper-wrapper {
+    transition-timing-function: linear !important;
+}
+
+**IMPORTANTE: ZERAR A VELOCIDADE DA REPRODUÇÃO AUTOMÁTICA E AUMENTAR A VELOCIDADE DA ANIMAÇÀO EM 5000

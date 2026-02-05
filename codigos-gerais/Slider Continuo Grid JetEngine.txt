@@ -1,0 +1,5 @@
+selector .slick-track {
+    transition-timing-function: linear !important;
+}
+
+*IMPORTANTE:* ZERAR O AUTOPLAY SPEED E COLOCAR 5000 NO ANIMATION SPEED

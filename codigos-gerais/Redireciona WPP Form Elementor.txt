@@ -1,0 +1,47 @@
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const form = document.querySelector('.elementor-form');
+
+		if (form) {
+			jQuery(document).on('submit_success', function() {
+				handleSuccessfulSubmission(form);
+			});
+		}
+	});
+
+	function handleSuccessfulSubmission(form) {
+		const fields = ['nome', 'email', 'telefone', 'empresa', 'message'];
+		let whatsappMessage = '';
+
+		// Processa o campo de mensagem
+		const messageField = form.querySelector('textarea[name="form_fields[message]"]');
+		if (messageField) {
+			const message = messageField.value.trim();
+			if (message) {
+				whatsappMessage += `${message}\n\n`;
+			}
+		}
+
+		// Processa os outros campos
+		fields.forEach(field => {
+			if (field !== 'message') {
+				const inputField = form.querySelector(`[name="form_fields[${field}]"]`);
+				if (inputField) {
+					const value = inputField.value.trim();
+					if (value) {
+						whatsappMessage += `*${field.charAt(0).toUpperCase() + field.slice(1)}:* ${value}\n`;
+					}
+				}
+			}
+		});
+
+		whatsappMessage += '\n_Albano Mayer_';
+
+		if (whatsappMessage) {
+			const encodedMessage = encodeURIComponent(whatsappMessage);
+			const phoneNumber = '555191215050';
+			const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
+			window.location.href = whatsappLink;
+		}
+	}
+</script>

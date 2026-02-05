@@ -1,0 +1,32 @@
+<script>
+function setPhoneMask() {
+    // Seleciona o elemento do formulário
+    const telefone = document.querySelector('#form-field-telefone');
+
+    // Telefone
+    function aplicarMascaraTelefone(telefone) {
+        telefone.value = telefone.value.replace(/\D/g, '')
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d)/, '$1-$2')
+            .replace(/(-\d{4})\d+?$/, '$1'); // Limita a 11 dígitos
+    }
+
+    // Verifica se o elemento existe antes de adicionar o evento
+    if (telefone) {
+        telefone.addEventListener('input', function() {
+            aplicarMascaraTelefone(this);
+        });
+        telefone.setAttribute('maxlength', 15);
+    }
+}
+
+// Executa a função quando o DOM estiver completamente carregado
+document.addEventListener('DOMContentLoaded', function() {
+    setPhoneMask();
+});
+
+// Para o Elementor
+jQuery(document).on('elementor/popup/show', function(event, popupId, instance) {
+    setPhoneMask();
+});
+</script>
